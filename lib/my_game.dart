@@ -61,11 +61,12 @@ class MyGame extends FlameGame {
         sprite: await loadSprite('joystick_background.png'),
         size: Vector2.all(100),
       ), // setting the background sprite and size
-      anchor: Anchor.bottomLeft, // anchor to bottom-left of the screen
+      anchor: Anchor.bottomRight, // anchor to bottom-left of the screen
       position: Vector2(
-        20,
+        size.x - 20,
         size.y - 20,
       ), // position with some margin from edges
+      priority: 10,
     );
 
     add(joystick); // add the joystick to the game
