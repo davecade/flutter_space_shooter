@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flutter_space_shooter/components/player.dart';
@@ -32,7 +33,13 @@ class MyGame extends FlameGame {
   // underscore for private method
   void _createPlayer() {
     // We set the player variable to a new Player instance
-    player = Player();
+    player = Player()
+      ..anchor = Anchor
+          .center // anchor the image to its center, not top-left
+      ..position = Vector2(
+        size.x / 2,
+        size.y * 0.8,
+      ); // position the player near the bottom center
 
     // This is how we add components to the game, by using the add() method
     add(player);

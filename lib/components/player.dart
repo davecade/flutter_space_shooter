@@ -7,9 +7,11 @@ import 'package:flame/components.dart';
 class Player extends SpriteComponent with HasGameReference {
   @override
   FutureOr<void> onLoad() async {
-    // Set the size of the player
     // Here we are loading a sprite from assets/images/player_blue_on0.png
     sprite = await game.loadSprite('player_blue_on0.png');
+
+    // Set the size of the player, while maintaining aspect ratio
+    size *= 0.3; // scale down the size to 30%
 
     return super.onLoad();
   }
