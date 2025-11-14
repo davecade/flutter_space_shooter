@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
+import 'package:flutter_space_shooter/components/asteroid.dart';
+
 import 'package:flutter_space_shooter/components/player.dart';
 
 class MyGame extends FlameGame {
@@ -11,7 +14,9 @@ class MyGame extends FlameGame {
   // We use "late" because we don't have the player yet when the game is created.
   // it allows us to set the variable later.
   late Player player;
+  late SpawnComponent _asteroidSpawner;
   late JoystickComponent joystick;
+  final Random _random = Random.secure();
 
   @override
   FutureOr<void> onLoad() async {
@@ -33,6 +38,7 @@ class MyGame extends FlameGame {
 
     // this method will first create the player and add it to the game
     _createPlayer();
+    _createAsteroidSpawner();
   }
 
   // underscore for private method
@@ -48,6 +54,21 @@ class MyGame extends FlameGame {
 
     // This is how we add components to the game, by using the add() method
     add(player);
+  }
+
+  // Component that spawns asteroids periodically
+  void _createAsteroidSpawner() {
+    // using the SpawnComponent from Flame to spawn asteroids, we can set the min and max period
+    // this will create a new asteroid every 0.7 to 1.2 seconds
+    _asteroidSpawner = SpawnComponent.periodRange(
+      factory: (index) => Asteroid(position: _generateSpawnPosition()),
+      maxPeriod: 0.7,
+      minPeriod: 1.2,
+      selfPositioning:
+          true, // we have to set this true so that the Asteroid component will use its own position
+    );
+
+    add(_asteroidSpawner);
   }
 
   Future<void> _createJoystick() async {
@@ -70,5 +91,11 @@ class MyGame extends FlameGame {
     );
 
     add(joystick); // add the joystick to the game
+  }
+
+  Vector2 _generateSpawnPosition() {
+    final double x = 10 + _random.nextDouble() * (size.x - 10 * 2);
+    final double y = -100; // spawn just above the top edge
+    return Vector2(x, y);
   }
 }
