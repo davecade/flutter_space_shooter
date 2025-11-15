@@ -2,13 +2,19 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flutter_space_shooter/components/asteroid.dart';
 
 import 'package:flutter_space_shooter/components/player.dart';
+import 'package:flutter_space_shooter/components/shoot_button.dart';
 
-class MyGame extends FlameGame {
+class MyGame extends FlameGame with HasKeyboardHandlerComponents {
+  // We need to add the HasKeyboardHandlerComponents mixin so that the
+  // game knows that some components will be handling keyboard input.
+
+  // ----------------------------------
   // We add the player component to the game
   // This is a global and public variable so other components can access it.
   // We use "late" because we don't have the player yet when the game is created.
@@ -17,6 +23,7 @@ class MyGame extends FlameGame {
   late SpawnComponent _asteroidSpawner;
   late JoystickComponent joystick;
   final Random _random = Random.secure();
+  late ShootButton _shootButton;
 
   @override
   FutureOr<void> onLoad() async {
@@ -37,12 +44,13 @@ class MyGame extends FlameGame {
     await _createJoystick();
 
     // this method will first create the player and add it to the game
-    _createPlayer();
+    await _createPlayer();
+    _createShootButton();
     _createAsteroidSpawner();
   }
 
   // underscore for private method
-  void _createPlayer() {
+  Future<void> _createPlayer() async {
     // We set the player variable to a new Player instance
     player = Player()
       ..anchor = Anchor
@@ -54,6 +62,14 @@ class MyGame extends FlameGame {
 
     // This is how we add components to the game, by using the add() method
     add(player);
+  }
+
+  void _createShootButton() {
+    _shootButton = ShootButton()
+      ..anchor = Anchor.bottomRight
+      ..position = Vector2(size.x - 20, size.y - 20)
+      ..priority = 10;
+    add(_shootButton);
   }
 
   // Component that spawns asteroids periodically

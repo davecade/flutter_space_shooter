@@ -2,11 +2,19 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flutter_space_shooter/components/laser.dart';
 import 'package:flutter_space_shooter/my_game.dart';
+import 'package:flutter/services.dart';
 
 // HasGameReference gives us a reference to the game instance
 // This is provided by Flame to allow components to access the game
-class Player extends SpriteComponent with HasGameReference<MyGame> {
+class Player extends SpriteComponent
+    with HasGameReference<MyGame>, KeyboardHandler {
+  bool _isShooting = false;
+  final double _fireCooldown = 0.2;
+  double _timeSinceLastFire = 0.0;
+  final Vector2 _keyboardMovements = Vector2.zero();
+
   @override
   FutureOr<void> onLoad() async {
     // Here we are loading a sprite from assets/images/player_blue_on0.png
@@ -22,12 +30,22 @@ class Player extends SpriteComponent with HasGameReference<MyGame> {
   void update(double dt) {
     super.update(dt);
 
+    // This adds movement from both joystick and keyboard
+    final Vector2 movement = game.joystick.relativeDelta + _keyboardMovements;
+
     position +=
-        game.joystick.relativeDelta.normalized() *
+        movement.normalized() *
         200 *
         dt; // always * the dt because update is called every frame, and the dt is the time difference between frames
 
     _handleScreenBoundaries();
+
+    _timeSinceLastFire += dt; // this keeps track of time since last fire
+    if (_isShooting && _timeSinceLastFire >= _fireCooldown) {
+      // fire lazer
+      _fireLazer();
+      _timeSinceLastFire = 0.0; // reset the timer
+    }
   }
 
   // inside the player we handle the screen bounds\
@@ -49,5 +67,53 @@ class Player extends SpriteComponent with HasGameReference<MyGame> {
     } else if (position.x > screenWidth + size.x / 2) {
       position.x = -size.x / 2;
     }
+  }
+
+  void startShooting() {
+    _isShooting = true;
+  }
+
+  void stopShooting() {
+    _isShooting = false;
+  }
+
+  void _fireLazer() {
+    // we need to create a new laser component and add it to the game
+    // here we set the laser position to be at the top center of the player
+    // the Vector2(0, -size.y / 2) offsets the laser to be at the top of the player
+    game.add(Laser(position: position.clone() + Vector2(0, -size.y / 2)));
+  }
+
+  @override
+  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    // this gives you access to the keys currently pressed
+    print('All keys: ${keysPressed.map((k) => k.debugName).toList()}');
+    _keyboardMovements.x = 0;
+
+    // check for left and right arrow keys
+    _keyboardMovements.x += keysPressed.contains(LogicalKeyboardKey.arrowRight)
+        ? 1
+        : 0;
+
+    // check for left arrow key
+    _keyboardMovements.x -= keysPressed.contains(LogicalKeyboardKey.arrowLeft)
+        ? 1
+        : 0;
+
+    //
+    _keyboardMovements.y = 0;
+
+    // check for up arrow key
+    _keyboardMovements.y += keysPressed.contains(LogicalKeyboardKey.arrowUp)
+        ? -1
+        : 0;
+
+    // check for up and down arrow keys
+    _keyboardMovements.y -= keysPressed.contains(LogicalKeyboardKey.arrowDown)
+        ? -1
+        : 0;
+
+    // this is so that the super class knows we've handled the event
+    return true;
   }
 }
