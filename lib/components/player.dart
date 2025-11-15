@@ -90,6 +90,12 @@ class Player extends SpriteComponent
     print('All keys: ${keysPressed.map((k) => k.debugName).toList()}');
     _keyboardMovements.x = 0;
 
+    // Note::
+    // I tried using Letter Keys, but the porblem with android emulators
+    // is that when you hold down a letter key, it cancels straight after its pressed
+    // then presses it again after a short delay, like a typewriter effect
+    // this doesn't happen with arrow keys, so for now we will use arrow keys for movement
+
     // check for left and right arrow keys
     _keyboardMovements.x += keysPressed.contains(LogicalKeyboardKey.arrowRight)
         ? 1
