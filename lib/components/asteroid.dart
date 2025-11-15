@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flutter_space_shooter/my_game.dart';
@@ -8,6 +7,7 @@ class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
   final Random _random = Random();
   static const double _maxSize = 120;
   late Vector2 _velocity;
+  late double _spinSpeed;
 
   // Constructor for creating an asteroid
   // - position: where the asteroid appears on screen
@@ -21,6 +21,9 @@ class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
         priority: -1, // Render behind other game objects
       ) {
     _velocity = _generateVelocity(); // Set random movement direction and speed
+    _spinSpeed =
+        _random.nextDouble() * 1.5 -
+        0.75; // Random spin speed between -0.75 and 0.75
   }
 
   @override
@@ -37,6 +40,9 @@ class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
     position += _velocity * dt;
 
     _handleScreenBoundaries();
+
+    // angle comes from the SpriteComponent class
+    angle += _spinSpeed * dt; // Rotate the asteroid
 
     if (position.y > game.size.y + size.y / 2) {
       // if the asteroid goes off the bottom of the screen, remove it
@@ -66,7 +72,6 @@ class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
 
   void _handleScreenBoundaries() {
     final double screenWidth = game.size.x;
-    final double screenHeight = game.size.y;
 
     if (position.y > game.size.y + size.y / 2) {
       removeFromParent();
