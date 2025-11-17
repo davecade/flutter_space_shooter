@@ -1,7 +1,10 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter_space_shooter/components/asteroid.dart';
 import 'package:flutter_space_shooter/my_game.dart';
 
-class Laser extends SpriteComponent with HasGameReference<MyGame> {
+class Laser extends SpriteComponent
+    with HasGameReference<MyGame>, CollisionCallbacks {
   // add constructor
   Laser({required super.position})
     : super(
@@ -14,6 +17,10 @@ class Laser extends SpriteComponent with HasGameReference<MyGame> {
     sprite = await game.loadSprite('laser.png');
 
     size *= 0.25; // scale down the size to 50%
+
+    //This hitbox will automatically size itself to the size of the component (the parent component)
+    // It will also automatically update its position when the parent component moves
+    add(RectangleHitbox());
 
     return super.onLoad();
   }
@@ -28,5 +35,16 @@ class Laser extends SpriteComponent with HasGameReference<MyGame> {
     }
 
     super.update(dt);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    if (other is Asteroid) {
+      // Handle collision with asteroid
+      removeFromParent(); // Remove laser from the game
+      other.removeFromParent();
+    }
   }
 }

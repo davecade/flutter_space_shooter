@@ -10,7 +10,8 @@ import 'package:flutter_space_shooter/components/asteroid.dart';
 import 'package:flutter_space_shooter/components/player.dart';
 import 'package:flutter_space_shooter/components/shoot_button.dart';
 
-class MyGame extends FlameGame with HasKeyboardHandlerComponents {
+class MyGame extends FlameGame
+    with HasKeyboardHandlerComponents, HasCollisionDetection {
   // We need to add the HasKeyboardHandlerComponents mixin so that the
   // game knows that some components will be handling keyboard input.
 

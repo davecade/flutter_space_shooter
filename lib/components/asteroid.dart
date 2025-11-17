@@ -1,9 +1,11 @@
 import 'dart:math';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter_space_shooter/my_game.dart';
 
-class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
+class Asteroid extends SpriteComponent
+    with HasGameReference<MyGame>, CollisionCallbacks {
   final Random _random = Random();
   static const double _maxSize = 120;
   late Vector2 _velocity;
@@ -30,6 +32,11 @@ class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
   Future<void> onLoad() async {
     final int imageNum = _random.nextInt(3) + 1;
     sprite = await game.loadSprite('asteroid$imageNum.png');
+
+    //This hitbox will automatically size itself to the size of the component (the parent component)
+    // It will also automatically update its position when the parent component moves
+    add(RectangleHitbox());
+
     return super.onLoad();
   }
 

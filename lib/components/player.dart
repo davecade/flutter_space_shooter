@@ -6,8 +6,6 @@ import 'package:flutter_space_shooter/components/laser.dart';
 import 'package:flutter_space_shooter/my_game.dart';
 import 'package:flutter/services.dart';
 
-// HasGameReference gives us a reference to the game instance
-// This is provided by Flame to allow components to access the game
 class Player extends SpriteComponent
     with HasGameReference<MyGame>, KeyboardHandler {
   bool _isShooting = false;
