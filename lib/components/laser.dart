@@ -44,7 +44,7 @@ class Laser extends SpriteComponent
     if (other is Asteroid) {
       // Handle collision with asteroid
       removeFromParent(); // Remove laser from the game
-      other.removeFromParent();
+      other.takeDamage(1); // Inflict damage to the asteroid
     }
   }
 }

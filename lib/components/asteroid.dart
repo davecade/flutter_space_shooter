@@ -10,6 +10,8 @@ class Asteroid extends SpriteComponent
   static const double _maxSize = 120;
   late Vector2 _velocity;
   late double _spinSpeed;
+  final double _maxHealth = 3;
+  late double _health;
 
   // Constructor for creating an asteroid
   // - position: where the asteroid appears on screen
@@ -26,6 +28,7 @@ class Asteroid extends SpriteComponent
     _spinSpeed =
         _random.nextDouble() * 1.5 -
         0.75; // Random spin speed between -0.75 and 0.75
+    _health = size / _maxSize * _maxHealth; // Initialize health to max health
   }
 
   @override
@@ -35,7 +38,7 @@ class Asteroid extends SpriteComponent
 
     //This hitbox will automatically size itself to the size of the component (the parent component)
     // It will also automatically update its position when the parent component moves
-    add(RectangleHitbox());
+    add(CircleHitbox());
 
     return super.onLoad();
   }
@@ -88,6 +91,13 @@ class Asteroid extends SpriteComponent
       position.x = screenWidth + size.x / 2;
     } else if (position.x > screenWidth + size.x / 2) {
       position.x = -size.x / 2;
+    }
+  }
+
+  void takeDamage(double damage) {
+    _health -= damage;
+    if (_health <= 0) {
+      removeFromParent();
     }
   }
 }
