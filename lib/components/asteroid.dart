@@ -14,6 +14,8 @@ class Asteroid extends SpriteComponent
   late double _spinSpeed;
   final double _maxHealth = 3;
   late double _health;
+  final Vector2 _oriiginalVelocity = Vector2.zero();
+  bool _isKnockbackInProgress = false;
 
   // Constructor for creating an asteroid
   // - position: where the asteroid appears on screen
@@ -27,6 +29,7 @@ class Asteroid extends SpriteComponent
         priority: -1, // Render behind other game objects
       ) {
     _velocity = _generateVelocity(); // Set random movement direction and speed
+    _oriiginalVelocity.setFrom(_velocity);
     _spinSpeed =
         _random.nextDouble() * 1.5 -
         0.75; // Random spin speed between -0.75 and 0.75
@@ -121,11 +124,20 @@ class Asteroid extends SpriteComponent
   }
 
   void _applyKnockback() {
+    if (_isKnockbackInProgress) return;
+
+    _isKnockbackInProgress = true;
+    _velocity.setZero();
     final MoveByEffect knockbackEffect = MoveByEffect(
       Vector2(0, -20),
       EffectController(duration: 0.1),
+      onComplete: _restoreVelocity,
     );
-
     add(knockbackEffect);
+  }
+
+  void _restoreVelocity() {
+    _velocity.setFrom(_oriiginalVelocity);
+    _isKnockbackInProgress = false;
   }
 }
