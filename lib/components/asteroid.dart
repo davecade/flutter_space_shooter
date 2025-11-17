@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_space_shooter/my_game.dart';
 
 class Asteroid extends SpriteComponent
@@ -98,6 +100,32 @@ class Asteroid extends SpriteComponent
     _health -= damage;
     if (_health <= 0) {
       removeFromParent();
+    } else {
+      _flashWhite();
+      _applyKnockback();
     }
+  }
+
+  // Flash the asteroid white briefly to indicate it took damage
+  void _flashWhite() {
+    final ColorEffect flashEffect = ColorEffect(
+      const Color.fromRGBO(255, 255, 255, 1.0),
+      EffectController(
+        duration: 0.1,
+        alternate: true,
+        infinite: false,
+        curve: Curves.easeInOut,
+      ),
+    );
+    add(flashEffect);
+  }
+
+  void _applyKnockback() {
+    final MoveByEffect knockbackEffect = MoveByEffect(
+      Vector2(0, -20),
+      EffectController(duration: 0.1),
+    );
+
+    add(knockbackEffect);
   }
 }
