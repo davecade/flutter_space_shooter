@@ -4,6 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_space_shooter/components/explosion.dart';
 import 'package:flutter_space_shooter/my_game.dart';
 
 class Asteroid extends SpriteComponent
@@ -103,6 +104,7 @@ class Asteroid extends SpriteComponent
     _health -= damage;
     if (_health <= 0) {
       removeFromParent();
+      _createExploision();
     } else {
       _flashWhite();
       _applyKnockback();
@@ -139,5 +141,20 @@ class Asteroid extends SpriteComponent
   void _restoreVelocity() {
     _velocity.setFrom(_oriiginalVelocity);
     _isKnockbackInProgress = false;
+  }
+
+  void _createExploision() {
+    final Explosion explosion = Explosion(
+      position: position.clone(),
+      explosionSize: size.x,
+      explosionType: ExplosionType.dust,
+    );
+
+    // We want to add the explosion to the game, not the asteroid itself
+    // Why, because the asteroid is being removed when exploded, and we want the explosion to persist
+    // until its own removal timer runs out
+    // However, since the explosions position is based on the asteroid's position, it will always
+    // explode where the asteroid was
+    game.add(explosion);
   }
 }

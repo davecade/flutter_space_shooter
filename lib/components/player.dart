@@ -85,7 +85,6 @@ class Player extends SpriteComponent
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     // this gives you access to the keys currently pressed
-    print('All keys: ${keysPressed.map((k) => k.debugName).toList()}');
     _keyboardMovements.x = 0;
 
     // Note::
