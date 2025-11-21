@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
@@ -123,7 +124,7 @@ class MyGame extends FlameGame
   void _createScoreDisplay() {
     _score = 0;
     _scoreDisplay = TextComponent(
-      text: 'Score: $_score',
+      text: '$_score',
       position: Vector2(size.x / 2, 20),
       anchor: Anchor.topCenter,
       priority: 10,
@@ -145,8 +146,14 @@ class MyGame extends FlameGame
     add(_scoreDisplay);
   }
 
-  void incrementScore() {
-    _score += 1;
-    _scoreDisplay.text = 'Score: $_score';
+  void incrementScore(int amount) {
+    _score += amount;
+    _scoreDisplay.text = '$_score';
+
+    final ScaleEffect popEffect = ScaleEffect.to(
+      Vector2.all(1.2),
+      EffectController(duration: 0.05, alternate: true, curve: Curves.easeOut),
+    );
+    _scoreDisplay.add(popEffect);
   }
 }
