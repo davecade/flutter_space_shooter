@@ -106,7 +106,9 @@ class Asteroid extends SpriteComponent
       removeFromParent();
       _createExploision();
       _splitAsteroid();
+      game.incrementScore(2);
     } else {
+      game.incrementScore(1);
       _flashWhite();
       _applyKnockback();
     }

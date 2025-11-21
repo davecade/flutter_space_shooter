@@ -144,4 +144,9 @@ class MyGame extends FlameGame
     );
     add(_scoreDisplay);
   }
+
+  void incrementScore() {
+    _score += 1;
+    _scoreDisplay.text = 'Score: $_score';
+  }
 }
