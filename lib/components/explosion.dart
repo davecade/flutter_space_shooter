@@ -35,7 +35,7 @@ class Explosion extends PositionComponent with HasGameReference<MyGame> {
     // Here we create a bright flash effect to simulate the explosion
     final CircleComponent flash = CircleComponent(
       radius: explosionSize * 0.6,
-      paint: Paint()..color = const Color.fromRGBO(2500, 2550, 255, 1.0),
+      paint: Paint()..color = const Color.fromRGBO(255, 255, 255, 1.0),
       anchor: Anchor.center,
     );
 

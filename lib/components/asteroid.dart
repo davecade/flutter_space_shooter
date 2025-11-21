@@ -105,6 +105,7 @@ class Asteroid extends SpriteComponent
     if (_health <= 0) {
       removeFromParent();
       _createExploision();
+      _splitAsteroid();
     } else {
       _flashWhite();
       _applyKnockback();
@@ -156,5 +157,17 @@ class Asteroid extends SpriteComponent
     // However, since the explosions position is based on the asteroid's position, it will always
     // explode where the asteroid was
     game.add(explosion);
+  }
+
+  void _splitAsteroid() {
+    if (size.x <= _maxSize / 3) return;
+
+    for (int i = 0; i < 3; i++) {
+      final Asteroid fragment = Asteroid(
+        position: position.clone(),
+        size: size.x - _maxSize / 3,
+      );
+      game.add(fragment);
+    }
   }
 }
