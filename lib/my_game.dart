@@ -9,6 +9,7 @@ import 'package:flutter_space_shooter/components/asteroid.dart';
 
 import 'package:flutter_space_shooter/components/player.dart';
 import 'package:flutter_space_shooter/components/shoot_button.dart';
+import 'package:flutter/material.dart';
 
 class MyGame extends FlameGame
     with HasKeyboardHandlerComponents, HasCollisionDetection {
@@ -25,13 +26,15 @@ class MyGame extends FlameGame
   late JoystickComponent joystick;
   final Random _random = Random.secure();
   late ShootButton _shootButton;
+  int _score = 0;
+  late TextComponent _scoreDisplay;
 
   @override
   FutureOr<void> onLoad() async {
     // Make the game full screen
     await Flame.device.fullScreen();
 
-    // We need to make it Porttait only
+    // We need to make it Portrait only
     await Flame.device.setPortrait();
 
     // This is where we start the game
@@ -48,6 +51,7 @@ class MyGame extends FlameGame
     await _createPlayer();
     _createShootButton();
     _createAsteroidSpawner();
+    _createScoreDisplay();
   }
 
   // underscore for private method
@@ -114,5 +118,30 @@ class MyGame extends FlameGame
     final double x = 10 + _random.nextDouble() * (size.x - 10 * 2);
     final double y = -100; // spawn just above the top edge
     return Vector2(x, y);
+  }
+
+  void _createScoreDisplay() {
+    _score = 0;
+    _scoreDisplay = TextComponent(
+      text: 'Score: $_score',
+      position: Vector2(size.x / 2, 20),
+      anchor: Anchor.topCenter,
+      priority: 10,
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 48,
+          fontWeight: FontWeight.bold,
+          shadows: [
+            Shadow(
+              color: Colors.black,
+              offset: Offset(2, 2),
+              blurRadius: BorderSide.strokeAlignCenter,
+            ),
+          ],
+        ),
+      ),
+    );
+    add(_scoreDisplay);
   }
 }
