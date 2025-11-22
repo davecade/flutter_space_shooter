@@ -44,7 +44,10 @@ class Asteroid extends SpriteComponent
 
     //This hitbox will automatically size itself to the size of the component (the parent component)
     // It will also automatically update its position when the parent component moves
-    add(CircleHitbox());
+    add(
+      CircleHitbox(collisionType: CollisionType.passive),
+    ); // We set the hitbox as passive so that it doesn't detect collisions with other asteroids
+    // Even though nothing happens on asteroid-asteroid collision, this improves performance
 
     return super.onLoad();
   }

@@ -6,6 +6,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter_space_shooter/components/asteroid.dart';
+import 'package:flutter_space_shooter/components/bomb.dart';
 import 'package:flutter_space_shooter/components/explosion.dart';
 import 'package:flutter_space_shooter/components/laser.dart';
 import 'package:flutter_space_shooter/components/pickup.dart';
@@ -212,6 +213,7 @@ class Player extends SpriteAnimationComponent
           _shieldsUp();
           break;
         case PickupType.bomb:
+          game.add(Bomb(position: position.clone()));
           break;
         case PickupType.laser:
           // Handle laser pickup
