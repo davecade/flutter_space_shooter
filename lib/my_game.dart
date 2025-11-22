@@ -125,7 +125,7 @@ class MyGame extends FlameGame
     _score = 0;
     _scoreDisplay = TextComponent(
       text: '$_score',
-      position: Vector2(size.x / 2, 20),
+      position: Vector2(size.x / 2, 40),
       anchor: Anchor.topCenter,
       priority: 10,
       textRenderer: TextPaint(
@@ -151,8 +151,12 @@ class MyGame extends FlameGame
     _scoreDisplay.text = '$_score';
 
     final ScaleEffect popEffect = ScaleEffect.to(
-      Vector2.all(1.2),
-      EffectController(duration: 0.05, alternate: true, curve: Curves.easeOut),
+      Vector2.all(1.2), // this is a scale up to 1.2x
+      EffectController(
+        duration: 0.05, // scale up duration
+        alternate: true,
+        curve: Curves.easeOut,
+      ), // this controls the timing of the effect
     );
     _scoreDisplay.add(popEffect);
   }
