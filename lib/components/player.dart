@@ -1,25 +1,34 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
+import 'package:flutter_space_shooter/components/asteroid.dart';
 import 'package:flutter_space_shooter/components/laser.dart';
 import 'package:flutter_space_shooter/my_game.dart';
 import 'package:flutter/services.dart';
 
-class Player extends SpriteComponent
-    with HasGameReference<MyGame>, KeyboardHandler {
+// Origialnlly the Player was a SpriteComponent, but we change it to SpriteAnimationComponent
+// This allows us to have an animated player ship
+class Player extends SpriteAnimationComponent
+    with HasGameReference<MyGame>, KeyboardHandler, CollisionCallbacks {
   bool _isShooting = false;
   final double _fireCooldown = 0.2;
   double _timeSinceLastFire = 0.0;
   final Vector2 _keyboardMovements = Vector2.zero();
+  bool _isDestroyed = false;
 
   @override
   FutureOr<void> onLoad() async {
     // Here we are loading a sprite from assets/images/player_blue_on0.png
-    sprite = await game.loadSprite('player_blue_on0.png');
+    animation = await _loadAnimation();
 
     // Set the size of the player, while maintaining aspect ratio
     size *= 0.3; // scale down the size to 30%
+
+    //collider for the player
+    add(RectangleHitbox());
 
     return super.onLoad();
   }
@@ -30,7 +39,9 @@ class Player extends SpriteComponent
 
     // This adds movement from both joystick and keyboard
     final Vector2 movement = game.joystick.relativeDelta + _keyboardMovements;
-
+    if (_isDestroyed) {
+      return; // if destroyed, do not allow movement
+    }
     position +=
         movement.normalized() *
         200 *
@@ -44,6 +55,17 @@ class Player extends SpriteComponent
       _fireLazer();
       _timeSinceLastFire = 0.0; // reset the timer
     }
+  }
+
+  Future<SpriteAnimation> _loadAnimation() async {
+    return SpriteAnimation.spriteList(
+      [
+        await game.loadSprite('player_blue_on0.png'),
+        await game.loadSprite('player_blue_on1.png'),
+      ],
+      stepTime: 0.1,
+      loop: true,
+    );
   }
 
   // inside the player we handle the screen bounds\
@@ -83,6 +105,20 @@ class Player extends SpriteComponent
   }
 
   @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    if (_isDestroyed) {
+      return; // if already destroyed, do nothing
+    }
+
+    if (other is Asteroid) {
+      // handle player destruction
+      _handleDestruction();
+    }
+  }
+
+  @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     // this gives you access to the keys currently pressed
     _keyboardMovements.x = 0;
@@ -118,5 +154,23 @@ class Player extends SpriteComponent
 
     // this is so that the super class knows we've handled the event
     return true;
+  }
+
+  void _handleDestruction() async {
+    // here we change the player animation to an "off" state
+    animation = SpriteAnimation.spriteList([
+      await game.loadSprite('player_blue_off.png'),
+    ], stepTime: double.infinity);
+
+    add(
+      ColorEffect(
+        const Color.fromRGBO(255, 255, 255, 0),
+        EffectController(duration: 0.0),
+      ),
+    );
+
+    add(OpacityEffect.fadeOut(EffectController(duration: 0.3)));
+
+    _isDestroyed = true;
   }
 }
