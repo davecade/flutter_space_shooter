@@ -21,6 +21,16 @@ class Player extends SpriteAnimationComponent
   final Vector2 _keyboardMovements = Vector2.zero();
   bool _isDestroyed = false;
   final Random _random = Random.secure();
+  late Timer _explosionTimer;
+
+  Player() {
+    _explosionTimer = Timer(
+      0.1,
+      onTick: _createRandomExplision,
+      repeat: true,
+      autoStart: false,
+    );
+  }
 
   @override
   FutureOr<void> onLoad() async {
@@ -43,6 +53,7 @@ class Player extends SpriteAnimationComponent
     // This adds movement from both joystick and keyboard
     final Vector2 movement = game.joystick.relativeDelta + _keyboardMovements;
     if (_isDestroyed) {
+      _explosionTimer.update(dt);
       return; // if destroyed, do not allow movement
     }
     position +=
@@ -209,8 +220,18 @@ class Player extends SpriteAnimationComponent
       ),
     );
 
-    add(OpacityEffect.fadeOut(EffectController(duration: 0.3)));
+    add(
+      OpacityEffect.fadeOut(
+        EffectController(duration: 0.5),
+        onComplete: () {
+          _explosionTimer.stop();
+        },
+      ),
+    );
+
+    add(RemoveEffect(delay: 4.0));
 
     _isDestroyed = true;
+    _explosionTimer.start();
   }
 }
