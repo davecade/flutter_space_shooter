@@ -292,11 +292,10 @@ class Player extends SpriteAnimationComponent
   void _shieldsUp() async {
     // Prevent multiple shields stacking
     if (_activeShield != null) {
-      _activeShield?.removeFromParent();
+      shieldsDown();
     }
 
     _activeShield = Shield();
-
     add(_activeShield!);
   }
 
