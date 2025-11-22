@@ -8,6 +8,8 @@ import 'package:flame/effects.dart';
 import 'package:flutter_space_shooter/components/asteroid.dart';
 import 'package:flutter_space_shooter/components/explosion.dart';
 import 'package:flutter_space_shooter/components/laser.dart';
+import 'package:flutter_space_shooter/components/pickup.dart';
+import 'package:flutter_space_shooter/components/shield.dart';
 import 'package:flutter_space_shooter/my_game.dart';
 import 'package:flutter/services.dart';
 
@@ -22,6 +24,9 @@ class Player extends SpriteAnimationComponent
   bool _isDestroyed = false;
   final Random _random = Random.secure();
   late Timer _explosionTimer;
+  late Timer _laserPowerupTimer;
+  late Timer _shieldTimer;
+  Shield? _activeShield;
 
   Player() {
     _explosionTimer = Timer(
@@ -30,6 +35,9 @@ class Player extends SpriteAnimationComponent
       repeat: true,
       autoStart: false,
     );
+
+    _laserPowerupTimer = Timer(10.0, autoStart: false);
+    _shieldTimer = Timer(10.0, autoStart: false, onTick: _shieldsDown);
   }
 
   @override
@@ -41,7 +49,13 @@ class Player extends SpriteAnimationComponent
     size *= 0.3; // scale down the size to 30%
 
     //collider for the player
-    add(RectangleHitbox());
+    add(
+      RectangleHitbox.relative(
+        Vector2(0.6, 0.9),
+        parentSize: size,
+        anchor: Anchor.center,
+      ),
+    );
 
     return super.onLoad();
   }
@@ -56,6 +70,16 @@ class Player extends SpriteAnimationComponent
       _explosionTimer.update(dt);
       return; // if destroyed, do not allow movement
     }
+
+    // we need to update the laser powerup timer so that it counts down
+    if (_laserPowerupTimer.isRunning()) {
+      _laserPowerupTimer.update(dt);
+    }
+
+    if (_shieldTimer.isRunning()) {
+      _shieldTimer.update(dt);
+    }
+
     position +=
         movement.normalized() *
         200 *
@@ -116,6 +140,22 @@ class Player extends SpriteAnimationComponent
     // here we set the laser position to be at the top center of the player
     // the Vector2(0, -size.y / 2) offsets the laser to be at the top of the player
     game.add(Laser(position: position.clone() + Vector2(0, -size.y / 2)));
+
+    // If the laser power-up is active, fire an additional laser from the left and right sides
+    if (_laserPowerupTimer.isRunning()) {
+      game.add(
+        Laser(
+          position: position.clone() + Vector2(0, -size.y / 2),
+          angle: 15 * degrees2Radians,
+        ),
+      );
+      game.add(
+        Laser(
+          position: position.clone() + Vector2(0, -size.y / 2),
+          angle: -15 * degrees2Radians,
+        ),
+      );
+    }
   }
 
   void _createRandomExplision() {
@@ -167,6 +207,24 @@ class Player extends SpriteAnimationComponent
       // handle player destruction
       _handleDestruction();
     }
+
+    if (other is Pickup) {
+      // handle pickup collection
+      other.removeFromParent();
+
+      // Example: Create a shield pickup effect
+      switch (other.pickupType) {
+        case PickupType.shield:
+          _shieldsUp();
+          break;
+        case PickupType.bomb:
+          break;
+        case PickupType.laser:
+          // Handle laser pickup
+          _laserPowerupTimer.start();
+          break;
+      }
+    }
   }
 
   @override
@@ -216,7 +274,7 @@ class Player extends SpriteAnimationComponent
     add(
       ColorEffect(
         const Color.fromRGBO(255, 255, 255, 0),
-        EffectController(duration: 0.0),
+        EffectController(duration: 0.5),
       ),
     );
 
@@ -229,9 +287,27 @@ class Player extends SpriteAnimationComponent
       ),
     );
 
+    add(MoveEffect.by(Vector2(0, 100), EffectController(duration: 0.5)));
+
     add(RemoveEffect(delay: 4.0));
 
     _isDestroyed = true;
     _explosionTimer.start();
+  }
+
+  void _shieldsUp() async {
+    _shieldTimer.start();
+
+    // Prevent multiple shields stacking
+    if (_activeShield != null) return;
+
+    _activeShield = Shield();
+
+    add(_activeShield!);
+  }
+
+  void _shieldsDown() {
+    _activeShield?.removeFromParent();
+    _activeShield = null;
   }
 }

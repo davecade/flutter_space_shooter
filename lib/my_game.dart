@@ -7,6 +7,7 @@ import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flutter_space_shooter/components/asteroid.dart';
+import 'package:flutter_space_shooter/components/pickup.dart';
 
 import 'package:flutter_space_shooter/components/player.dart';
 import 'package:flutter_space_shooter/components/shoot_button.dart';
@@ -29,6 +30,7 @@ class MyGame extends FlameGame
   late ShootButton _shootButton;
   int _score = 0;
   late TextComponent _scoreDisplay;
+  late SpawnComponent _pickupSpawner;
 
   @override
   FutureOr<void> onLoad() async {
@@ -41,6 +43,8 @@ class MyGame extends FlameGame
     // This is where we start the game
     startGame();
 
+    // debugMode = true;
+
     return super.onLoad();
   }
 
@@ -52,6 +56,7 @@ class MyGame extends FlameGame
     await _createPlayer();
     _createShootButton();
     _createAsteroidSpawner();
+    _createPickupSpawner();
     _createScoreDisplay();
   }
 
@@ -91,6 +96,25 @@ class MyGame extends FlameGame
     );
 
     add(_asteroidSpawner);
+  }
+
+  // Component that spawns pickups periodically
+  void _createPickupSpawner() {
+    // using the SpawnComponent from Flame to spawn pickups, we can set the min and max period
+    // this will create a new pickup every 0.7 to 1.2 seconds
+    _pickupSpawner = SpawnComponent.periodRange(
+      factory: (index) => Pickup(
+        position: _generateSpawnPosition(),
+        pickupType:
+            PickupType.values[_random.nextInt(PickupType.values.length)],
+      ),
+      maxPeriod: 3,
+      minPeriod: 6,
+      selfPositioning:
+          true, // we have to set this true so that the Asteroid component will use its own position
+    );
+
+    add(_pickupSpawner);
   }
 
   Future<void> _createJoystick() async {

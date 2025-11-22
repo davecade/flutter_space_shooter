@@ -110,7 +110,7 @@ class Asteroid extends SpriteComponent
     } else {
       game.incrementScore(1);
       _flashWhite();
-      _applyKnockback();
+      applyKnockback();
     }
   }
 
@@ -128,7 +128,7 @@ class Asteroid extends SpriteComponent
     add(flashEffect);
   }
 
-  void _applyKnockback() {
+  void applyKnockback() {
     if (_isKnockbackInProgress) return;
 
     _isKnockbackInProgress = true;
