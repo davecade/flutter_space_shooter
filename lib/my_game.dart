@@ -108,8 +108,8 @@ class MyGame extends FlameGame
         pickupType:
             PickupType.values[_random.nextInt(PickupType.values.length)],
       ),
-      maxPeriod: 3,
-      minPeriod: 6,
+      maxPeriod: 5,
+      minPeriod: 10,
       selfPositioning:
           true, // we have to set this true so that the Asteroid component will use its own position
     );
