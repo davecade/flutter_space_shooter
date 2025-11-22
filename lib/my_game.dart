@@ -12,6 +12,7 @@ import 'package:flutter_space_shooter/components/pickup.dart';
 import 'package:flutter_space_shooter/components/player.dart';
 import 'package:flutter_space_shooter/components/shoot_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_space_shooter/components/star.dart';
 
 class MyGame extends FlameGame
     with HasKeyboardHandlerComponents, HasCollisionDetection {
@@ -39,6 +40,8 @@ class MyGame extends FlameGame
 
     // We need to make it Portrait only
     await Flame.device.setPortrait();
+
+    _createStarsBackground();
 
     // This is where we start the game
     startGame();
@@ -183,5 +186,11 @@ class MyGame extends FlameGame
       ), // this controls the timing of the effect
     );
     _scoreDisplay.add(popEffect);
+  }
+
+  void _createStarsBackground() {
+    for (int i = 0; i < 50; i++) {
+      add(Star()..priority = -10);
+    }
   }
 }
