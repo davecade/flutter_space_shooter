@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter_space_shooter/components/asteroid.dart';
+import 'package:flutter_space_shooter/components/explosion.dart';
 import 'package:flutter_space_shooter/components/laser.dart';
 import 'package:flutter_space_shooter/my_game.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +20,7 @@ class Player extends SpriteAnimationComponent
   double _timeSinceLastFire = 0.0;
   final Vector2 _keyboardMovements = Vector2.zero();
   bool _isDestroyed = false;
+  final Random _random = Random.secure();
 
   @override
   FutureOr<void> onLoad() async {
@@ -102,6 +105,43 @@ class Player extends SpriteAnimationComponent
     // here we set the laser position to be at the top center of the player
     // the Vector2(0, -size.y / 2) offsets the laser to be at the top of the player
     game.add(Laser(position: position.clone() + Vector2(0, -size.y / 2)));
+  }
+
+  void _createRandomExplision() {
+    // Generate a random position somewhere within the bounds of this component.
+    // This creates variation so explosions don't always appear in the same spot.
+    final Vector2 explosionPosition = Vector2(
+      // X position:
+      // Start at this component's X position, then offset by a random value
+      // within its width, while re-centering to keep it visually balanced.
+      position.x + (_random.nextDouble() * size.x) - (size.x / 2),
+
+      // Y position:
+      // Same logic as X, but for vertical placement.
+      position.y + (_random.nextDouble() * size.y) - (size.y / 2),
+    );
+
+    // Randomly decide which type of explosion to create.
+    // 50% chance for smoke, 50% chance for fire.
+    final ExplosionType explosionType = _random.nextBool()
+        ? ExplosionType.smoke
+        : ExplosionType.fire;
+
+    // Create a new Explosion instance using the generated data.
+    final Explosion explosion = Explosion(
+      // Where the explosion will appear in the game world
+      position: explosionPosition,
+
+      // Size of the explosion relative to this component's width.
+      // 70% of the current component's size for consistent scaling.
+      explosionSize: size.x * 0.7,
+
+      // The visual / animation style of the explosion (smoke or fire)
+      explosionType: explosionType,
+    );
+
+    // Add the explosion to the game so it gets rendered and updated.
+    game.add(explosion);
   }
 
   @override
