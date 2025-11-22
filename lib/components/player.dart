@@ -25,7 +25,6 @@ class Player extends SpriteAnimationComponent
   final Random _random = Random.secure();
   late Timer _explosionTimer;
   late Timer _laserPowerupTimer;
-  late Timer _shieldTimer;
   Shield? _activeShield;
 
   Player() {
@@ -37,7 +36,6 @@ class Player extends SpriteAnimationComponent
     );
 
     _laserPowerupTimer = Timer(10.0, autoStart: false);
-    _shieldTimer = Timer(10.0, autoStart: false, onTick: _shieldsDown);
   }
 
   @override
@@ -74,10 +72,6 @@ class Player extends SpriteAnimationComponent
     // we need to update the laser powerup timer so that it counts down
     if (_laserPowerupTimer.isRunning()) {
       _laserPowerupTimer.update(dt);
-    }
-
-    if (_shieldTimer.isRunning()) {
-      _shieldTimer.update(dt);
     }
 
     position +=
@@ -296,17 +290,17 @@ class Player extends SpriteAnimationComponent
   }
 
   void _shieldsUp() async {
-    _shieldTimer.start();
-
     // Prevent multiple shields stacking
-    if (_activeShield != null) return;
+    if (_activeShield != null) {
+      _activeShield?.removeFromParent();
+    }
 
     _activeShield = Shield();
 
     add(_activeShield!);
   }
 
-  void _shieldsDown() {
+  void shieldsDown() {
     _activeShield?.removeFromParent();
     _activeShield = null;
   }

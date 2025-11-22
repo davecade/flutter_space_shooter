@@ -28,8 +28,19 @@ class Shield extends SpriteComponent
       ),
     );
 
+    final OpacityEffect fadeOutEffect = OpacityEffect.fadeOut(
+      EffectController(
+        duration: 1,
+        startDelay: 3,
+        alternate: true,
+        repeatCount: 2,
+      ),
+      onComplete: () => game.player.shieldsDown(),
+    );
+
     // Adds a pulsing effect to the pickup
     add(pulsatingEffect);
+    add(fadeOutEffect);
 
     return super.onLoad();
   }
