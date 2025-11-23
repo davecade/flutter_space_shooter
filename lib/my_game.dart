@@ -193,4 +193,9 @@ class MyGame extends FlameGame
       add(Star()..priority = -10);
     }
   }
+
+  void playerDied() {
+    pauseEngine(); // Can be used to pause the game
+    overlays.add('GameOver');
+  }
 }

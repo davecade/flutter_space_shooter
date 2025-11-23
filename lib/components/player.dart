@@ -285,7 +285,7 @@ class Player extends SpriteAnimationComponent
 
     add(MoveEffect.by(Vector2(0, 100), EffectController(duration: 0.5)));
 
-    add(RemoveEffect(delay: 4.0));
+    add(RemoveEffect(delay: 1, onComplete: game.playerDied));
 
     _isDestroyed = true;
     _explosionTimer.start();
