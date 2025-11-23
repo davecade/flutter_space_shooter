@@ -27,6 +27,7 @@ class Player extends SpriteAnimationComponent
   late Timer _explosionTimer;
   late Timer _laserPowerupTimer;
   Shield? _activeShield;
+  late String _color;
 
   Player() {
     _explosionTimer = Timer(
@@ -41,6 +42,9 @@ class Player extends SpriteAnimationComponent
 
   @override
   FutureOr<void> onLoad() async {
+    // this will set the initial player color
+    _color = game.playerColors[game.playerColorIndex];
+
     // Here we are loading a sprite from assets/images/player_blue_on0.png
     animation = await _loadAnimation();
 
@@ -93,8 +97,8 @@ class Player extends SpriteAnimationComponent
   Future<SpriteAnimation> _loadAnimation() async {
     return SpriteAnimation.spriteList(
       [
-        await game.loadSprite('player_blue_on0.png'),
-        await game.loadSprite('player_blue_on1.png'),
+        await game.loadSprite('player_${_color}_on0.png'),
+        await game.loadSprite('player_${_color}_on1.png'),
       ],
       stepTime: 0.1,
       loop: true,
@@ -264,7 +268,7 @@ class Player extends SpriteAnimationComponent
   void _handleDestruction() async {
     // here we change the player animation to an "off" state
     animation = SpriteAnimation.spriteList([
-      await game.loadSprite('player_blue_off.png'),
+      await game.loadSprite('player_${_color}_off.png'),
     ], stepTime: double.infinity);
 
     add(

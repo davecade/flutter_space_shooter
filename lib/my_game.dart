@@ -32,6 +32,8 @@ class MyGame extends FlameGame
   int _score = 0;
   late TextComponent _scoreDisplay;
   late SpawnComponent _pickupSpawner;
+  final List<String> playerColors = ['blue', 'red', 'green', 'purple'];
+  int playerColorIndex = 0;
 
   @override
   FutureOr<void> onLoad() async {
