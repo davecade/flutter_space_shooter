@@ -43,9 +43,6 @@ class MyGame extends FlameGame
 
     _createStarsBackground();
 
-    // This is where we start the game
-    startGame();
-
     // debugMode = true;
 
     return super.onLoad();
@@ -197,5 +194,43 @@ class MyGame extends FlameGame
   void playerDied() {
     pauseEngine(); // Can be used to pause the game
     overlays.add('GameOver');
+  }
+
+  void restartGame() {
+    // Find all the PositionComponents in the game and remove them
+    children.whereType<PositionComponent>().forEach((component) {
+      if (component is Asteroid || component is Pickup) {
+        remove(component);
+      }
+    });
+
+    // This will reset the asteroid and pickup spawners
+    _asteroidSpawner.timer.start();
+    _pickupSpawner.timer.start();
+
+    _score = 0;
+    _scoreDisplay.text = '0';
+
+    // create new player
+    _createPlayer();
+
+    resumeEngine();
+  }
+
+  void quitGame() {
+    // remove everything except the stars
+    children.whereType<PositionComponent>().forEach((component) {
+      if (component is! Star) {
+        remove(component);
+      }
+    });
+
+    remove(_asteroidSpawner);
+    remove(_pickupSpawner);
+
+    // Show the title overlay
+    overlays.add('Title');
+
+    resumeEngine();
   }
 }

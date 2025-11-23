@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_space_shooter/my_game.dart';
 import 'package:flutter_space_shooter/overlays/game_over_overlay.dart';
+import 'package:flutter_space_shooter/overlays/title_overlay.dart';
 
 void main() {
   // We firsyt create an instance of our game
@@ -16,7 +17,11 @@ void main() {
         'GameOver': (context, MyGame game) {
           return GameOverOverlay(game: game);
         },
+        "Title": (context, MyGame game) {
+          return TitleOverlay(game: game);
+        },
       },
+      initialActiveOverlays: const ['Title'],
     ),
   );
 }
