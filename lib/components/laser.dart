@@ -48,6 +48,7 @@ class Laser extends SpriteComponent
     super.onCollision(intersectionPoints, other);
 
     if (other is Asteroid) {
+      game.audioManager.playSound('hit');
       // Handle collision with asteroid
       removeFromParent(); // Remove laser from the game
       other.takeDamage(1); // Inflict damage to the asteroid

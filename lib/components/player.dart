@@ -135,6 +135,7 @@ class Player extends SpriteAnimationComponent
   }
 
   void _fireLazer() {
+    game.audioManager.playSound('laser');
     // we need to create a new laser component and add it to the game
     // here we set the laser position to be at the top center of the player
     // the Vector2(0, -size.y / 2) offsets the laser to be at the top of the player
@@ -208,16 +209,19 @@ class Player extends SpriteAnimationComponent
     }
 
     if (other is Pickup) {
+      game.audioManager.playSound('collect');
       // handle pickup collection
       other.removeFromParent();
 
       // Example: Create a shield pickup effect
       switch (other.pickupType) {
         case PickupType.shield:
+          game.audioManager.playSound('fire');
           _shieldsUp();
           break;
         case PickupType.bomb:
           game.add(Bomb(position: position.clone()));
+          game.audioManager.playSound('explode1');
           break;
         case PickupType.laser:
           // Handle laser pickup
@@ -266,6 +270,7 @@ class Player extends SpriteAnimationComponent
   }
 
   void _handleDestruction() async {
+    game.audioManager.playSound('explode2');
     // here we change the player animation to an "off" state
     animation = SpriteAnimation.spriteList([
       await game.loadSprite('player_${_color}_off.png'),

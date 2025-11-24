@@ -52,6 +52,7 @@ class _TitleOverlayState extends State<TitleOverlay> {
                 // This is the left arrow button
                 GestureDetector(
                   onTap: () {
+                    widget.game.audioManager.playSound('click');
                     setState(() {
                       widget.game.playerColorIndex--;
                       if (widget.game.playerColorIndex < 0) {
@@ -81,6 +82,7 @@ class _TitleOverlayState extends State<TitleOverlay> {
                 // This is the right arrow button
                 GestureDetector(
                   onTap: () {
+                    widget.game.audioManager.playSound('click');
                     setState(() {
                       widget.game.playerColorIndex++;
                       if (widget.game.playerColorIndex ==
@@ -99,6 +101,7 @@ class _TitleOverlayState extends State<TitleOverlay> {
             const SizedBox(height: 10),
             GestureDetector(
               onTap: () {
+                widget.game.audioManager.playSound('start');
                 // Start the game
                 widget.game.startGame();
 
