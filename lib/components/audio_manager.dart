@@ -65,8 +65,8 @@ class AudioManager extends Component {
   // ---------------- MUSIC ----------------
 
   void playMusic() {
-    if (!musicEnabled || !_ready) return;
-    FlameAudio.bgm.play('music.ogg', volume: 0.5);
+    // if (!musicEnabled || !_ready) return;
+    // FlameAudio.bgm.play('music.ogg', volume: 0.5);
   }
 
   void stopMusic() {
